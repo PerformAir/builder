@@ -5,7 +5,7 @@ ARG SHA=c35a1803a6e70a126e80b2b3ae33eed961f83ed74d18fcd16909b2d44d7dada3203f1ffe
 ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
 
 RUN apt-get update \
-    && apt install -y git apt-transport-https ca-certificates curl wget software-properties-common gnupg \
+    && apt install -y git apt-transport-https ca-certificates curl wget software-properties-common gnupg gnupg-agent\
 # Install adoptopenjdk 8
     && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
     && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
@@ -21,9 +21,9 @@ RUN apt-get update \
     && curl -sSL https://deb.nodesource.com/setup_12.x | bash - \
     && apt install -y nodejs \
 # Install docker ce
-    && curl -sSL -o /tmp/docker.tgz https://download.docker.com/linux/static/stable/x86_64/docker-19.03.8.tgz \
-    && tar -xzf /tmp/docker.tgz -C /tmp \
-    && cp /tmp/docker/* /usr/bin \
-    && rm -rf /tmp/docker* \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
+    && apt-key fingerprint 0EBFCD88 \
+    && add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    && apt update && apt install -y docker-ce \
 # Clean apt cache    
     && rm -rf /var/lib/apt/lists/*
